@@ -1,0 +1,37 @@
+--- agent-loop.ts.orig	2025-04-17 18:45:00.000000000 +0000
++++ agent-loop.ts	2025-04-17 18:45:00.000000000 +0000
+@@ -21,6 +21,7 @@
+ import { handleExecCommand } from "./handle-exec-command.js";
+ import { randomUUID } from "node:crypto";
+ import OpenAI, { APIConnectionTimeoutError } from "openai";
++import { initBraintrustLogger, wrapOpenAIWithBraintrust } from "../braintrust-logger.js";
+ 
+ // Wait time before retrying after rate limit errors (ms).
+ const RATE_LIMIT_RETRY_WAIT_MS = parseInt(
+@@ -261,6 +262,26 @@
+       ...(timeoutMs !== undefined ? { timeout: timeoutMs } : {}),
+     });
+ 
++    // Initialize Braintrust logging if enabled
++    if (this.config.braintrustEnabled && this.config.braintrustApiKey) {
++      (async () => {
++        try {
++          await initBraintrustLogger(
++            this.config.braintrustProjectName,
++            this.config.braintrustApiKey
++          );
++          this.oai = wrapOpenAIWithBraintrust(this.oai);
++          if (isLoggingEnabled()) {
++            log("Braintrust logging initialized and OpenAI client wrapped");
++          }
++        } catch (error) {
++          if (isLoggingEnabled()) {
++            log(`Failed to initialize Braintrust logging: ${error}`);
++          }
++        }
++      })();
++    }
++
+     setSessionId(this.sessionId);
+     setCurrentModel(this.model);
+ 
