@@ -1,5 +1,6 @@
 import { OPENAI_API_KEY } from "./config";
 import OpenAI from "openai";
+import { wrapWithBraintrust } from "./braintrust/index.js";
 
 const MODEL_LIST_TIMEOUT_MS = 2_000; // 2 seconds
 export const RECOMMENDED_MODELS: Array<string> = ["o4-mini", "o3"];
@@ -21,7 +22,9 @@ async function fetchModels(): Promise<Array<string>> {
   }
 
   try {
-    const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+    const openaiClient = new OpenAI({ apiKey: OPENAI_API_KEY });
+    // Wrap the OpenAI client with Braintrust logging if enabled
+    const openai = wrapWithBraintrust(openaiClient);
     const list = await openai.models.list();
 
     const models: Array<string> = [];
@@ -39,7 +42,7 @@ async function fetchModels(): Promise<Array<string>> {
 
 export function preloadModels(): void {
   if (!modelsPromise) {
-    // Fire‑and‑forget – callers that truly need the list should `await`
+    // Fire\u2011and\u2011forget \u2013 callers that truly need the list should `await`
     // `getAvailableModels()` instead.
     void getAvailableModels();
   }
@@ -55,7 +58,7 @@ export async function getAvailableModels(): Promise<Array<string>> {
 /**
  * Verify that the provided model identifier is present in the set returned by
  * {@link getAvailableModels}. The list of models is fetched from the OpenAI
- * `/models` endpoint the first time it is required and then cached in‑process.
+ * `/models` endpoint the first time it is required and then cached in\u2011process.
  */
 export async function isModelSupportedForResponses(
   model: string | undefined | null,
@@ -76,7 +79,7 @@ export async function isModelSupportedForResponses(
       ),
     ]);
 
-    // If the timeout fired we get an empty list → treat as supported to avoid
+    // If the timeout fired we get an empty list \u2192 treat as supported to avoid
     // false negatives.
     if (models.length === 0) {
       return true;
@@ -84,7 +87,7 @@ export async function isModelSupportedForResponses(
 
     return models.includes(model.trim());
   } catch {
-    // Network or library failure → don't block start‑up.
+    // Network or library failure \u2192 don't block start\u2011up.
     return true;
   }
 }

@@ -29,6 +29,7 @@ import {
 } from "./utils/model-utils.js";
 import { parseToolCall } from "./utils/parsers";
 import { onExit, setInkRenderer } from "./utils/terminal";
+import { initBraintrustLogger } from "./utils/braintrust/index.js";
 import chalk from "chalk";
 import { spawnSync } from "child_process";
 import fs from "fs";
@@ -40,6 +41,9 @@ import React from "react";
 // Call this early so `tail -F "$TMPDIR/oai-codex/codex-cli-latest.log"` works
 // immediately. This must be run with DEBUG=1 for logging to work.
 initLogger();
+
+// Initialize Braintrust logging if API key is available
+initBraintrustLogger("Codex CLI");
 
 // TODO: migrate to new versions of quiet mode
 //
@@ -442,7 +446,7 @@ process.on("SIGTERM", exit);
 if (process.stdin.isTTY) {
   // Ensure we do not leave the terminal in raw mode if the user presses
   // Ctrl‑C while some other component has focus and Ink is intercepting
-  // input. Node does *not* emit a SIGINT in raw‑mode, so we listen for the
+  // input. Node does *not* emit a SIGINT in raw mode, so we listen for the
   // corresponding byte (0x03) ourselves and trigger a graceful shutdown.
   const onRawData = (data: Buffer | string): void => {
     const str = Buffer.isBuffer(data) ? data.toString("utf8") : data;

@@ -25,6 +25,8 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import path from "path";
 import React, { useEffect, useState, useRef } from "react";
 
+import { wrapWithBraintrust } from "../utils/braintrust/index.js";
+
 /** Maximum number of characters allowed in the context passed to the model. */
 const MAX_CONTEXT_CHARACTER_LIMIT = 2_000_000;
 
@@ -386,6 +388,14 @@ export function SinglePassApp({
     setState("thinking");
 
     try {
+      // Create OpenAI client
+      const openaiClient = new OpenAI({
+        apiKey: config.apiKey,
+      });
+      
+      // Wrap with Braintrust logging if enabled
+      const openai = wrapWithBraintrust(openaiClient);
+
       const taskContextStr = renderTaskContext({
         prompt: userPrompt,
         input_paths: [rootPath],
@@ -393,11 +403,6 @@ export function SinglePassApp({
         files,
       });
 
-      const openai = new OpenAI({
-        apiKey: config.apiKey ?? "",
-        baseURL: OPENAI_BASE_URL || undefined,
-        timeout: OPENAI_TIMEOUT_MS,
-      });
       const chatResp = await openai.beta.chat.completions.parse({
         model: config.model,
         messages: [

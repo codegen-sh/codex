@@ -12,31 +12,14 @@
 
 - [Experimental Technology Disclaimer](#experimental-technology-disclaimer)
 - [Quickstart](#quickstart)
-- [Why Codex?](#whycodex)
+- [Why&nbsp;Codex?](#whycodex)
 - [Funding Opportunity](#funding-opportunity)
-- [Security Model \& Permissions](#securitymodelpermissions)
+- [Security&nbsp;Model&nbsp;\&&nbsp;Permissions](#securitymodelpermissions)
   - [Platform sandboxing details](#platform-sandboxing-details)
-- [System Requirements](#systemrequirements)
-- [CLI Reference](#clireference)
-- [Memory \& Project Docs](#memoryprojectdocs)
-- [Non‑interactive / CI mode](#noninteractivecimode)
-- [Recipes](#recipes)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [FAQ](#faq)
-- [Contributing](#contributing)
-  - [Development workflow](#development-workflow)
-  - [Writing high‑impact code changes](#writing-highimpact-code-changes)
-  - [Opening a pull request](#opening-a-pull-request)
-  - [Review process](#review-process)
-  - [Community values](#community-values)
-  - [Getting help](#getting-help)
-  - [Contributor License Agreement (CLA)](#contributor-license-agreement-cla)
-    - [Quick fixes](#quick-fixes)
-  - [Releasing `codex`](#releasing-codex)
-- [Security \& Responsible AI](#securityresponsibleai)
-- [License](#license)
-
+- [System&nbsp;Requirements](#systemrequirements)
+- [CLI&nbsp;Reference](#clireference)
+- [Integrations](#integrations)
+  - [Braintrust Logging](#braintrust-logging)
 </details>
 
 ---
@@ -90,11 +73,11 @@ they’ll be committed to your working directory.
 
 ---
 
-## Why Codex?
+## Why&nbsp;Codex?
 
 Codex CLI is built for developers who already **live in the terminal** and want
 ChatGPT‑level reasoning **plus** the power to actually run code, manipulate
-files, and iterate – all under version control. In short, it’s _chat‑driven
+files, and iterate – all under version control. In short, it’s _chat���driven
 development_ that understands and executes your repo.
 
 - **Zero setup** — bring your OpenAI API key and it just works!
@@ -115,7 +98,7 @@ We’re excited to launch a **$1 million initiative** supporting open source pr
 
 ---
 
-## Security Model & Permissions
+## Security&nbsp;Model&nbsp;\&&nbsp;Permissions
 
 Codex lets you decide _how much autonomy_ the agent receives and auto-approval policy via the
 `--approval-mode` flag (or the interactive onboarding prompt):
@@ -156,7 +139,7 @@ Both approaches are _transparent_ to everyday usage – you still run `codex` fr
 
 ---
 
-## System Requirements
+## System&nbsp;Requirements
 
 | Requirement                 | Details                                                         |
 | --------------------------- | --------------------------------------------------------------- |
@@ -169,7 +152,7 @@ Both approaches are _transparent_ to everyday usage – you still run `codex` fr
 
 ---
 
-## CLI Reference
+## CLI&nbsp;Reference
 
 | Command                              | Purpose                             | Example                              |
 | ------------------------------------ | ----------------------------------- | ------------------------------------ |
@@ -182,7 +165,34 @@ Key flags: `--model/-m`, `--approval-mode/-a`, and `--quiet/-q`.
 
 ---
 
-## Memory & Project Docs
+## Integrations
+
+### Braintrust Logging
+
+Codex CLI supports logging LLM interactions to [Braintrust](https://www.braintrust.dev/), a platform for monitoring, evaluating, and improving AI applications.
+
+To enable Braintrust logging:
+
+1. Sign up for a Braintrust account at [braintrust.dev](https://www.braintrust.dev/)
+2. Get your API key from the Braintrust dashboard
+3. Set the environment variable:
+
+```bash
+export BRAINTRUST_API_KEY="your-braintrust-api-key"
+```
+
+Once configured, Codex will automatically log all OpenAI API calls to Braintrust, allowing you to:
+
+- Monitor model performance and usage
+- Track costs and latency
+- Analyze prompt-response patterns
+- Identify areas for improvement
+
+Braintrust logging is optional and only enabled when the `BRAINTRUST_API_KEY` environment variable is set.
+
+---
+
+## Memory&nbsp;&nbsp;Project&nbsp;Docs
 
 Codex merges Markdown instructions in this order:
 
@@ -194,7 +204,7 @@ Disable with `--no-project-doc` or `CODEX_DISABLE_PROJECT_DOC=1`.
 
 ---
 
-## Non‑interactive / CI mode
+## Non‑interactive&nbsp;/&nbsp;CI&nbsp;mode
 
 Run Codex head‑less in pipelines. Example GitHub Action step:
 

@@ -21,6 +21,7 @@ import {
 import { handleExecCommand } from "./handle-exec-command.js";
 import { randomUUID } from "node:crypto";
 import OpenAI, { APIConnectionTimeoutError } from "openai";
+import { wrapWithBraintrust } from "../braintrust/index.js";
 
 // Wait time before retrying after rate limit errors (ms).
 const RATE_LIMIT_RETRY_WAIT_MS = parseInt(
@@ -209,10 +210,10 @@ export class AgentLoop {
     model,
     instructions,
     approvalPolicy,
-    // `config` used to be required.  Some unit‑tests (and potentially other
+    // `config` used to be required.  Some unit\u2011tests (and potentially other
     // callers) instantiate `AgentLoop` without passing it, so we make it
     // optional and fall back to sensible defaults.  This keeps the public
-    // surface backwards‑compatible and prevents runtime errors like
+    // surface backwards\u2011compatible and prevents runtime errors like
     // "Cannot read properties of undefined (reading 'apiKey')" when accessing
     // `config.apiKey` below.
     config,
@@ -244,12 +245,12 @@ export class AgentLoop {
     // Configure OpenAI client with optional timeout (ms) from environment
     const timeoutMs = OPENAI_TIMEOUT_MS;
     const apiKey = this.config.apiKey ?? process.env["OPENAI_API_KEY"] ?? "";
-    this.oai = new OpenAI({
+    const oaiClient = new OpenAI({
       // The OpenAI JS SDK only requires `apiKey` when making requests against
-      // the official API.  When running unit‑tests we stub out all network
+      // the official API.  When running unit\u2011tests we stub out all network
       // calls so an undefined key is perfectly fine.  We therefore only set
       // the property if we actually have a value to avoid triggering runtime
-      // errors inside the SDK (it validates that `apiKey` is a non‑empty
+      // errors inside the SDK (it validates that `apiKey` is a non\u2011empty
       // string when the field is present).
       ...(apiKey ? { apiKey } : {}),
       baseURL: OPENAI_BASE_URL,
@@ -260,6 +261,9 @@ export class AgentLoop {
       },
       ...(timeoutMs !== undefined ? { timeout: timeoutMs } : {}),
     });
+    
+    // Wrap the OpenAI client with Braintrust logging if enabled
+    this.oai = wrapWithBraintrust(oaiClient);
 
     setSessionId(this.sessionId);
     setCurrentModel(this.model);
