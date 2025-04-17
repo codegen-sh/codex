@@ -94,7 +94,7 @@ they’ll be committed to your working directory.
 
 Codex CLI is built for developers who already **live in the terminal** and want
 ChatGPT‑level reasoning **plus** the power to actually run code, manipulate
-files, and iterate – all under version control. In short, it’s _chat‑driven
+files, and iterate – all under version control. In short, it’s _chat�����driven
 development_ that understands and executes your repo.
 
 - **Zero setup** — bring your OpenAI API key and it just works!
@@ -271,7 +271,7 @@ Codex looks for config files in **`~/.codex/`**.
 
 ```yaml
 # ~/.codex/config.yaml
-model: o4-mini # Default model
+model: claude-3-opus-20240229 # Default model
 fullAutoErrorMode: ask-user # or ignore-and-continue
 ```
 
@@ -311,7 +311,7 @@ Not directly. It requires [Windows Subsystem for Linux (WSL2)](https://learn.mic
 <details>
 <summary>Which models are supported?</summary>
 
-Any model available with [Responses API](https://platform.openai.com/docs/api-reference/responses). The default is `o4-mini`, but pass `--model gpt-4o` or set `model: gpt-4o` in your config file to override.
+Any model available with [Responses API](https://platform.openai.com/docs/api-reference/responses). The default is `claude-3-opus-20240229`, but pass `--model gpt-4o` or set `model: gpt-4o` in your config file to override.
 
 </details>
 
