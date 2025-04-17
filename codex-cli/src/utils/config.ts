@@ -35,9 +35,14 @@ export const OPENAI_TIMEOUT_MS =
   parseInt(process.env["OPENAI_TIMEOUT_MS"] || "0", 10) || undefined;
 export const OPENAI_BASE_URL = process.env["OPENAI_BASE_URL"] || "";
 export let OPENAI_API_KEY = process.env["OPENAI_API_KEY"] || "";
+export let BRAINTRUST_API_KEY = process.env["BRAINTRUST_API_KEY"] || "";
 
 export function setApiKey(apiKey: string): void {
   OPENAI_API_KEY = apiKey;
+}
+
+export function setBraintrustApiKey(apiKey: string): void {
+  BRAINTRUST_API_KEY = apiKey;
 }
 
 // Formatting (quiet mode-only).
@@ -49,6 +54,8 @@ export type StoredConfig = {
   approvalMode?: AutoApprovalMode;
   fullAutoErrorMode?: FullAutoErrorMode;
   memory?: MemoryConfig;
+  braintrustEnabled?: boolean;
+  braintrustProjectName?: string;
 };
 
 // Minimal config written on first run.  An *empty* model string ensures that
@@ -56,7 +63,7 @@ export type StoredConfig = {
 // propagating to existing users until they explicitly set a model.
 export const EMPTY_STORED_CONFIG: StoredConfig = { model: "" };
 
-// Pre‑stringified JSON variant so we don’t stringify repeatedly.
+// Pre‑stringified JSON variant so we don't stringify repeatedly.
 const EMPTY_CONFIG_JSON = JSON.stringify(EMPTY_STORED_CONFIG, null, 2) + "\n";
 
 export type MemoryConfig = {
@@ -70,6 +77,9 @@ export type AppConfig = {
   instructions: string;
   fullAutoErrorMode?: FullAutoErrorMode;
   memory?: MemoryConfig;
+  braintrustEnabled?: boolean;
+  braintrustApiKey?: string;
+  braintrustProjectName?: string;
 };
 
 // ---------------------------------------------------------------------------
@@ -253,6 +263,9 @@ export const loadConfig = (
         ? DEFAULT_FULL_CONTEXT_MODEL
         : DEFAULT_AGENTIC_MODEL),
     instructions: combinedInstructions,
+    braintrustEnabled: storedConfig.braintrustEnabled ?? false,
+    braintrustApiKey: BRAINTRUST_API_KEY,
+    braintrustProjectName: storedConfig.braintrustProjectName ?? "Codex",
   };
 
   // -----------------------------------------------------------------------
@@ -340,13 +353,19 @@ export const saveConfig = (
     mkdirSync(dir, { recursive: true });
   }
 
+  const configToSave = {
+    model: config.model,
+    braintrustEnabled: config.braintrustEnabled,
+    braintrustProjectName: config.braintrustProjectName,
+  };
+
   const ext = extname(targetPath).toLowerCase();
   if (ext === ".yaml" || ext === ".yml") {
-    writeFileSync(targetPath, dumpYaml({ model: config.model }), "utf-8");
+    writeFileSync(targetPath, dumpYaml(configToSave), "utf-8");
   } else {
     writeFileSync(
       targetPath,
-      JSON.stringify({ model: config.model }, null, 2),
+      JSON.stringify(configToSave, null, 2),
       "utf-8",
     );
   }

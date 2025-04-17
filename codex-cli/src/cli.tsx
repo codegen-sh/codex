@@ -68,6 +68,11 @@ const cli = meow(
     --project-doc <file>       Include an additional markdown file at <file> as context
     --full-stdout              Do not truncate stdout/stderr from command outputs
 
+  Braintrust Logging
+    --braintrust               Enable Braintrust logging for OpenAI API calls
+    --braintrustApiKey <key>   API key for Braintrust logging
+    --braintrustProject <name> Project name for Braintrust logging (default: Codex)
+
   Dangerous options
     --dangerously-auto-approve-everything
                                Skip all confirmation prompts and execute commands without
@@ -77,11 +82,6 @@ const cli = meow(
     -f, --full-context         Launch in "full-context" mode which loads the entire repository
                                into context and applies a batch of edits in one go. Incompatible
                                with all other flags, except for --model.
-
-  Examples
-    $ codex "Write and run a python program that prints ASCII art"
-    $ codex -q "fix build issues"
-    $ codex completion bash
 `,
   {
     importMeta: import.meta,
@@ -135,6 +135,20 @@ const cli = meow(
         description:
           "Disable truncation of command stdout/stderr messages (show everything)",
         aliases: ["no-truncate"],
+      },
+
+      // Braintrust logging options
+      braintrust: {
+        type: "boolean",
+        description: "Enable Braintrust logging for OpenAI API calls",
+      },
+      braintrustApiKey: {
+        type: "string",
+        description: "API key for Braintrust logging",
+      },
+      braintrustProject: {
+        type: "string",
+        description: "Project name for Braintrust logging (default: Codex)",
       },
 
       // Experimental mode where whole directory is loaded in context and model is requested
@@ -219,6 +233,21 @@ if (!apiKey) {
   process.exit(1);
 }
 
+// Handle Braintrust API key
+const braintrustApiKey = cli.flags.braintrustApiKey || process.env["BRAINTRUST_API_KEY"];
+if (cli.flags.braintrust && !braintrustApiKey) {
+  // eslint-disable-next-line no-console
+  console.error(
+    `\n${chalk.yellow("Braintrust logging enabled but no API key provided.")}\n\n` +
+      `Set the environment variable ${chalk.bold("BRAINTRUST_API_KEY")} or use ` +
+      `the --braintrustApiKey flag to provide an API key.\n` +
+      `You can create a key at ${chalk.bold(
+        chalk.underline("https://www.braintrust.dev"),
+      )}\n`,
+  );
+  process.exit(1);
+}
+
 const fullContextMode = Boolean(cli.flags.fullContext);
 let config = loadConfig(undefined, undefined, {
   cwd: process.cwd(),
@@ -235,6 +264,9 @@ config = {
   apiKey,
   ...config,
   model: model ?? config.model,
+  braintrustEnabled: Boolean(cli.flags.braintrust),
+  braintrustApiKey: braintrustApiKey,
+  braintrustProjectName: (cli.flags.braintrustProject as string) || "Codex",
 };
 
 if (!(await isModelSupportedForResponses(config.model))) {
@@ -442,7 +474,7 @@ process.on("SIGTERM", exit);
 if (process.stdin.isTTY) {
   // Ensure we do not leave the terminal in raw mode if the user presses
   // Ctrl‑C while some other component has focus and Ink is intercepting
-  // input. Node does *not* emit a SIGINT in raw‑mode, so we listen for the
+  // input. Node does *not* emit a SIGINT in raw mode, so we listen for the
   // corresponding byte (0x03) ourselves and trigger a graceful shutdown.
   const onRawData = (data: Buffer | string): void => {
     const str = Buffer.isBuffer(data) ? data.toString("utf8") : data;
