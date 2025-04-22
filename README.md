@@ -1,7 +1,7 @@
-<h1 align="center">OpenAI Codex CLI</h1>
+<h1 align="center">Codex CLI</h1>
 <p align="center">Lightweight coding agent that runs in your terminal</p>
 
-<p align="center"><code>npm i -g @openai/codex</code></p>
+<p align="center"><code>npm i -g @codegen-sh/codex</code></p>
 
 ![Codex demo GIF using: codex "explain this codebase to me"](./.github/demo.gif)
 
@@ -27,7 +27,6 @@
 - [Configuration](#configuration)
 - [FAQ](#faq)
 - [Zero Data Retention (ZDR) Organization Limitation](#zero-data-retention-zdr-organization-limitation)
-- [Funding Opportunity](#funding-opportunity)
 - [Contributing](#contributing)
   - [Development workflow](#development-workflow)
   - [Git Hooks with Husky](#git-hooks-with-husky)
@@ -67,7 +66,7 @@ Help us improve by filing issues or submitting PRs (see the section below for ho
 Install globally:
 
 ```shell
-npm install -g @openai/codex
+npm install -g @codegen-sh/codex
 ```
 
 Next, set your OpenAI API key as an environment variable:
@@ -102,6 +101,12 @@ export OPENAI_API_KEY="your-api-key-here"
 >
 > ```shell
 > export <provider>_API_KEY="your-api-key-here"
+> ```
+>
+> You can also set a custom base URL for the provider:
+>
+> ```shell
+> export <provider>_BASE_URL="your-custom-base-url"
 > ```
 
 </details>
@@ -229,7 +234,7 @@ Run Codex head-less in pipelines. Example GitHub Action step:
 ```yaml
 - name: Update changelog via Codex
   run: |
-    npm install -g @openai/codex
+    npm install -g @codegen-sh/codex
     export OPENAI_API_KEY="${{ secrets.OPENAI_KEY }}"
     codex -a auto-edit --quiet "update CHANGELOG for next release"
 ```
@@ -248,7 +253,7 @@ DEBUG=true codex
 
 ## Recipes
 
-Below are a few bite-size examples you can copy-paste. Replace the text in quotes with your own task. See the [prompting guide](https://github.com/openai/codex/blob/main/codex-cli/examples/prompting_guide.md) for more tips and usage patterns.
+Below are a few bite-size examples you can copy-paste. Replace the text in quotes with your own task.
 
 | ✨  | What you type                                                                   | What happens                                                               |
 | --- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
@@ -268,13 +273,13 @@ Below are a few bite-size examples you can copy-paste. Replace the text in quote
 <summary><strong>From npm (Recommended)</strong></summary>
 
 ```bash
-npm install -g @openai/codex
+npm install -g @codegen-sh/codex
 # or
-yarn global add @openai/codex
+yarn global add @codegen-sh/codex
 # or
-bun install -g @openai/codex
+bun install -g @codegen-sh/codex
 # or
-pnpm add -g @openai/codex
+pnpm add -g @codegen-sh/codex
 ```
 
 </details>
@@ -284,7 +289,7 @@ pnpm add -g @openai/codex
 
 ```bash
 # Clone the repository and navigate to the CLI package
-git clone https://github.com/openai/codex.git
+git clone https://github.com/codegen-sh/codex.git
 cd codex/codex-cli
 
 # Enable corepack
@@ -397,17 +402,6 @@ OpenAI rejected the request. Error details: Status: 400, Code: unsupported_param
 
 - If you are part of a ZDR organization, Codex CLI will not work until support is added.
 - We are tracking this limitation and will update the documentation once support becomes available.
-
----
-
-## Funding Opportunity
-
-We're excited to launch a **$1 million initiative** supporting open source projects that use Codex CLI and other OpenAI models.
-
-- Grants are awarded in **$25,000** API credit increments.
-- Applications are reviewed **on a rolling basis**.
-
-**Interested? [Apply here](https://openai.com/form/codex-open-source-fund/).**
 
 ---
 
@@ -568,7 +562,7 @@ nix run .#codex
 
 ## Security & Responsible AI
 
-Have you discovered a vulnerability or have concerns about model output? Please e-mail **security@openai.com** and we will respond promptly.
+Have you discovered a vulnerability or have concerns about model output? Please contact the maintainers by opening an issue.
 
 ---
 
